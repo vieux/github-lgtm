@@ -46,25 +46,26 @@
 
     function update_lgmt_count(cpt)
     {
-	var LGTM = document.getElementsByClassName('LGMT-count');
+	var LGTM = document.getElementsByClassName('sidebar-lgtm');
 	if (LGTM.length == 1) {
 	    LGTM[0].remove()
 	}
 	if (cpt != 0) {
 	    var sidebar = document.getElementsByClassName('discussion-sidebar')[0];
-	    var html = '<ul class="changes LGTM-count"><li><p>';
+	    var html = '<div class="comment-body discussion-sidebar-heading sidebar-lgtm"><strong>';
 	    if (cpt > 0) {
-		html += '<span class="addition">+</span>';
+		html += '+';
 	    } else {
-		html += '<span class="deletion">-</span>';
+		html += '-';
 	    }
-	    html += ' <strong>' + Math.abs(cpt) + ' LGTM</strong></p></li></ul>';
-	    sidebar.insertAdjacentHTML('beforeend', html);
+	    html += Math.abs(cpt) + ' LGTM</strong></div>';
+	    sidebar.insertAdjacentHTML('afterbegin', html);
 	    if (cpt > 0) {
-		sidebar.lastChild.style.backgroundColor='#7FFF7F';
+		sidebar.firstChild.style.backgroundColor='#7FFF7F';
 	    } else {
-		sidebar.lastChild.style.backgroundColor='#FFAAAA';
+		sidebar.firstChild.style.backgroundColor='#FFAAAA';
 	    }
+	    sidebar.firstChild.style.textAlign="center";
 	}
     }
 
