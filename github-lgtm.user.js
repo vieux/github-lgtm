@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.4
+// @version        0.4.1
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -82,7 +82,7 @@
 	if (cpt < 2) {
 	    merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
 
-	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon discussion-item-icon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
+	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
 
 	    var button = message.getElementsByClassName('merge-branch-action')[0];
 	    button.className = button.className.replace('primary', '');
@@ -90,7 +90,7 @@
 	    var message = message.getElementsByClassName('merge-branch-heading')[0];
 	    message.innerHTML = 'Merge with caution!';
 	} else {
-	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon discussion-item-icon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
+	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
 	}
     }
 
@@ -103,16 +103,14 @@
     
     update();
 
-    /* TODO: fix
     setTimeout(function(){
-    var timeline = document.getElementsByClassName('discussion-timeline')
+    var timeline = document.getElementsByClassName('js-discussion')
     timeline[0].addEventListener('DOMNodeInserted', function (e) {
 	    var target = e.target;
 	    var cl = target.className;
-	     if (cl.IndexOf("comment-body") >= 0) {
+	     if (cl.IndexOf("js-comment-container") >= 0) {
 		 update();
 	    }
 	}, false);
 	}, 10);
-    */
 })();
