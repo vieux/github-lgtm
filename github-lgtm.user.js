@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.3
+// @version        0.4
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -68,20 +68,29 @@
 	}
     }
 
-    function update_merge_button()
+    function update_merge_button(cpt)
     {
-	var merge = document.getElementsByClassName('merge-branch')[0];
-	if (merge.className.indexOf('mergeable-clean') != -1) {
-	    merge.className = merge.className.replace('mergeable-clean', 'mergeable-unstable');
+	var merge = document.getElementsByClassName('merge-pr')[0];
+	if (merge.getElementsByClassName('push-more').length > 0) {
+	    merge = merge.firstElementChild.nextElementSibling;
+	} else {
+	    merge =merge.firstElementChild;
+	}
 
-	    var bubble = merge.getElementsByClassName('bubble')[0];
-	    bubble.insertAdjacentHTML('afterbegin', '<div class="branch-status edit-comment-hide status-failure"><p><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</p></div>');
+	var message = merge.getElementsByClassName('merge-message')[0];
 
-	    var button = bubble.getElementsByClassName('merge-branch-action')[0];
+	if (cpt < 2) {
+	    merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
+
+	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon discussion-item-icon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
+
+	    var button = message.getElementsByClassName('merge-branch-action')[0];
 	    button.className = button.className.replace('primary', '');
 
-	    var message = bubble.getElementsByClassName('merge-branch-heading')[0];
+	    var message = message.getElementsByClassName('merge-branch-heading')[0];
 	    message.innerHTML = 'Merge with caution!';
+	} else {
+	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon discussion-item-icon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
 	}
     }
 
@@ -89,9 +98,7 @@
     {
 	cpt=highlight_comments();
 	update_lgmt_count(cpt);
-	if (cpt < 2) {
-	    update_merge_button();
-	}
+	update_merge_button(cpt);
     }
     
     update();
