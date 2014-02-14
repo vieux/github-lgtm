@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.4.1
+// @version        0.4.2
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -66,32 +66,36 @@
 		sidebar.firstChild.style.backgroundColor='#FFAAAA';
 	    }
 	    sidebar.firstChild.style.textAlign="center";
+	    sidebar.firstChild.style.borderRadius="3px";
+	    sidebar.firstChild.style.MozBorderRadius="3px";
 	}
     }
 
     function update_merge_button(cpt)
     {
 	var merge = document.getElementsByClassName('merge-pr')[0];
-	if (merge.getElementsByClassName('push-more').length > 0) {
-	    merge = merge.firstElementChild.nextElementSibling;
-	} else {
-	    merge =merge.firstElementChild;
-	}
+	if (merge) {
+	    if (merge.getElementsByClassName('push-more').length > 0) {
+		merge = merge.firstElementChild.nextElementSibling;
+	    } else {
+		merge =merge.firstElementChild;
+	    }
 
-	var message = merge.getElementsByClassName('merge-message')[0];
+	    var message = merge.getElementsByClassName('merge-message')[0];
 
-	if (cpt < 2) {
-	    merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
+	    if (cpt < 2) {
+		merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
 
-	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
+		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
 
-	    var button = message.getElementsByClassName('merge-branch-action')[0];
-	    button.className = button.className.replace('primary', '');
+		var button = message.getElementsByClassName('merge-branch-action')[0];
+		button.className = button.className.replace('primary', '');
 
-	    var message = message.getElementsByClassName('merge-branch-heading')[0];
-	    message.innerHTML = 'Merge with caution!';
-	} else {
-	    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
+		var message = message.getElementsByClassName('merge-branch-heading')[0];
+		message.innerHTML = 'Merge with caution!';
+	    } else {
+		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
+	    }
 	}
     }
 
@@ -104,14 +108,18 @@
     
     update();
 
+    /*
     setTimeout(function(){
-    var timeline = document.getElementsByClassName('js-discussion')
-    timeline[0].addEventListener('DOMNodeInserted', function (e) {
-	    var target = e.target;
-	    var cl = target.className;
-	     if (cl.IndexOf("js-comment-container") >= 0) {
-		 update();
+	    var timeline = document.getElementsByClassName('js-discussion')[0];
+	    if (timeline) {
+		timeline.addEventListener('DOMNodeInserted', function (e) {
+			var target = e.target;
+			var cl = target.className;
+			if (cl.IndexOf("js-comment-container") >= 0) {
+			    update();
+			}
+		    }, false);
 	    }
-	}, false);
 	}, 10);
+    */
 })();
