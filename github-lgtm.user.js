@@ -75,7 +75,7 @@
     {
 	var merge = document.getElementsByClassName('merge-pr')[0];
 	if (merge) {
-	    if (merge.getElementsByClassName('push-more').length > 0) {
+	    if (merge.getElementsByClassName('merge-pr-more-commits').length > 0) {
 		merge = merge.firstElementChild.nextElementSibling;
 	    } else {
 		merge =merge.firstElementChild;
