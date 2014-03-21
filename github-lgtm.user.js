@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.4.2
+// @version        0.5
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -99,14 +99,33 @@
 	}
     }
 
+    function add_lgtm_button()
+    {
+	var buttons = document.getElementById('js-new-comment-form-actions');
+	button_lgtm = document.createElement('button');
+	button_lgtm.setAttribute('class', 'button primary');
+	button_lgtm.setAttribute('tabindex', '1');
+	button_lgtm.innerText = 'LGTM';
+	button_lgtm.onclick = function() {
+	    for (var i = 0, len = document.getElementsByName('comment[body]').length; i < len; i++) {
+		document.getElementsByName('comment[body]')[i].value = "LGTM";
+	    }
+	}
+	buttons.appendChild(button_lgtm)
+    }
+
     function update()
     {
+
 	cpt=highlight_comments();
 	update_lgmt_count(cpt);
 	update_merge_button(cpt);
+	add_lgtm_button();
     }
-    
-    update();
+
+    if (document.getElementsByClassName('view-pull-request')[0]) {
+	update();
+    }
 
     /*
     setTimeout(function(){
