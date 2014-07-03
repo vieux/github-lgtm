@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.5.1
+// @version        0.6
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -15,7 +15,10 @@
     {
 	var content = text.textContent || text.innerText;
 	try {
-	    if (String(content).toLowerCase().indexOf("not lgtm") != -1) {
+	    if (String(content).toLowerCase().indexOf("not lgtm") != -1 ||
+		String(content).toLowerCase().indexOf("notlgtm") != -1 ||
+		String(content).toLowerCase().indexOf("no lgtm") != -1 ||
+		String(content).toLowerCase().indexOf("nolgtm") != -1) {
 		comment.style.backgroundColor='#FFAAAA';
 		return -1
 	    } else if (String(content).toLowerCase().indexOf("lgtm") != -1) {
@@ -26,22 +29,28 @@
 	return 0
     }
 
-    function highlight_comments()
+    function highlight_comments(votes)
     {
-	var cpt = 0
-	var comments = document.getElementsByClassName('comment-body');	
-	for(var comment in comments){
-	    if (comment == 0) {
-		continue;
+	var total = 0, cpt = 0;
+	var comments = document.getElementsByClassName('timeline-comment-wrapper');	
+	var i = comments.length;
+	while (--i) {
+	    var com = comments[i].getElementsByClassName('comment-body')[0];
+	    var author = comments[i].getElementsByClassName('author').length == 1 ? comments[i].getElementsByClassName('author')[0].innerText : "<none>";
+	    if (!isNaN(votes[author]) && votes[author] != 0) {
+	        continue;
 	    }
-	    var com = comments[comment];
 	    if (com.children && com.children.length > 0 && com.children[0].className.indexOf('email-fragment') >= 0) {
-		cpt +=  highlight_comment(com.children[0], com);
+		cpt = highlight_comment(com.children[0], com);
 	    } else {
-		cpt += highlight_comment(com, com);
+		cpt = highlight_comment(com, com);
 	    }
+	    if (cpt != 0) {
+		votes[author] = cpt;
+	    }
+	    total += cpt;
 	}
-	return cpt
+	return total;
     }
 
     function update_lgmt_count(cpt)
@@ -71,7 +80,7 @@
 	}
     }
 
-    function update_merge_button(cpt)
+    function update_merge_button(cpt, votes)
     {
 	var merge = document.getElementsByClassName('merge-pr')[0];
 	if (merge) {
@@ -94,7 +103,13 @@
 		var message = message.getElementsByClassName('merge-branch-heading')[0];
 		message.innerHTML = 'Merge with caution!';
 	    } else {
-		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM</div>');
+		var names = "";
+		for (var vote in votes) {
+		    if (votes[vote] == 1) {
+			names = ' <a class="user-mention" href="//github.com/' + vote + '">@'+ vote + '</a>' + names;
+		    }
+		}
+		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</div>');
 	    }
 	}
     }
@@ -124,10 +139,10 @@
 
     function update()
     {
-
-	cpt=highlight_comments();
+	var votes = new Array();
+	var cpt = highlight_comments(votes);
 	update_lgmt_count(cpt);
-	update_merge_button(cpt);
+	update_merge_button(cpt, votes);
 	remove_protip();
 	add_lgtm_button();
     }
