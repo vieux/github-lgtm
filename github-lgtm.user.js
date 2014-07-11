@@ -121,6 +121,7 @@
 	button_lgtm.setAttribute('class', 'button primary');
 	button_lgtm.setAttribute('tabindex', '1');
 	button_lgtm.innerText = 'LGTM';
+	button_lgtm.textContent = 'LGTM';
 	button_lgtm.onclick = function() {
 	    for (var i = 0, len = document.getElementsByName('comment[body]').length; i < len; i++) {
 		document.getElementsByName('comment[body]')[i].value = "LGTM";
