@@ -116,7 +116,7 @@
 
     function add_lgtm_button()
     {
-	var buttons = document.getElementById('js-new-comment-form-actions');
+	var buttons = document.getElementById('partial-new-comment-form-actions');
 	button_lgtm = document.createElement('button');
 	button_lgtm.setAttribute('class', 'button primary');
 	button_lgtm.setAttribute('tabindex', '1');
