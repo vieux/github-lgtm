@@ -36,7 +36,7 @@
 	var i = comments.length;
 	while (--i) {
 	    var com = comments[i].getElementsByClassName('comment-body')[0];
-	    var author = comments[i].getElementsByClassName('author').length == 1 ? comments[i].getElementsByClassName('author')[0].innerText : "<none>";
+	    var author = comments[i].getElementsByClassName('author').length == 1 ? comments[i].getElementsByClassName('author')[0] : "<none>";
 	    if (!isNaN(votes[author]) && votes[author] != 0) {
 	        continue;
 	    }
