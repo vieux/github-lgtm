@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.6.2
+// @version        0.6.3
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -106,7 +106,8 @@
 		var names = "";
 		for (var vote in votes) {
 		    if (votes[vote] == 1) {
-			names = ' <a class="user-mention" href="//github.com/' + vote + '">@'+ vote + '</a>' + names;
+			var parts = vote.split("/") 
+			names = ' <a class="user-mention" href="' + vote + '">@'+ parts[parts.length-1] + '</a>' + names;
 		    }
 		}
 		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</div>');
