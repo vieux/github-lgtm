@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           GitHub-LGTM
-// @version        0.6.3
+// @version        0.6.4
 // @namespace      http://vvieux.com
 // @description    Display LGTM on github.com
 // @match          https://github.com/
@@ -99,7 +99,7 @@
 	    if (cpt < 2) {
 		merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
 
-		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</div>');
+		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="build-status-description"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</span></div>');
 
 		var button = message.getElementsByClassName('merge-branch-action')[0];
 		button.className = button.className.replace('primary', '');
@@ -114,7 +114,7 @@
 			names = ' <a class="user-mention" href="' + vote + '">@'+ parts[parts.length-1] + '</a>' + names;
 		    }
 		}
-		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</div>');
+		message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="build-status-description"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</span></div>');
 	    }
 	}
     }
