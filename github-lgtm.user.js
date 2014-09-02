@@ -23,14 +23,14 @@
 				 String(content).toLowerCase().indexOf("notlgtm") != -1 ||
 		         String(content).toLowerCase().indexOf("no lgtm") != -1 ||
                  String(content).toLowerCase().indexOf("nolgtm") != -1) || {
-		comment.style.backgroundColor='#FFAAAA';
-		return -1
+			comment.style.backgroundColor='#FFAAAA';
+			return -1
 	    } else if (String(content).toLowerCase().indexOf("lgtm") != -1) {
-		comment.style.backgroundColor='#7FFF7F';
-		return 1
+			comment.style.backgroundColor='#7FFF7F';
+			return 1
 	    } 
-        }catch (e) {}
-	return 0
+        } catch (e) {}
+		return 0
     }
 
     function highlight_comments(votes)
