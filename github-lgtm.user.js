@@ -39,6 +39,10 @@
             var i = comments.length;
             while (--i) {
                 var com = comments[i].getElementsByClassName('comment-body')[0];
+                if (com == null) {
+                    continue;
+                }
+
                 var author = comments[i].getElementsByClassName('author').length == 1 ? comments[i].getElementsByClassName('author')[0] : "<none>";
                 if (!isNaN(votes[author]) && votes[author] != 0) {
                     continue;
@@ -91,12 +95,19 @@
                     merge = merge.firstElementChild;
                 }
 
+                // Remove old messages
+                var lgtm_msg_id = 'lgtm-status';
+                var prev_lgtm_msg = document.getElementById(lgtm_msg_id);
+                if (prev_lgtm_msg) {
+                    prev_lgtm_msg.parentNode.removeChild(prev_lgtm_msg);
+                }
+
                 var message = merge.getElementsByClassName('merge-message')[0];
 
                 if (cpt < 2) {
                     merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
 
-                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="status-description"><span class="octicon octicon-x text-failure"></span> <span class="text-muted"><strong class="text-failure">Failed</strong> — Need at least 2 LGTM</span></span></div>');
+                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure" id="' + lgtm_msg_id + '"><span class="status-description"><span class="octicon octicon-x text-failure"></span> <span class="text-muted"><strong class="text-failure">Failed</strong> — Need at least 2 LGTM</span></span></div>');
 
                     var button = message.getElementsByClassName('merge-branch-action')[0];
                     button.className = button.className.replace('primary', '');
@@ -111,18 +122,24 @@
                             names = ' <a class="user-mention" href="' + vote + '">@' + parts[parts.length - 1] + '</a>' + names;
                         }
                     }
-                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="status-description"><span class="octicon octicon-check text-success"></span> <span class="text-muted"><strong class="text-success">All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</span></span></div>');
+                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success" id="' + lgtm_msg_id + '"><span class="status-description"><span class="octicon octicon-check text-success"></span> <span class="text-muted"><strong class="text-success">All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</span></span></div>');
                 }
             }
         }
 
         function add_lgtm_button() {
+            // Don't add our button twice
+            if (document.getElementById('lgtm-button')) {
+                return;
+            }
+
             var buttons = document.getElementById('partial-new-comment-form-actions');
             button_lgtm = document.createElement('button');
             button_lgtm.setAttribute('class', 'btn btn-primary');
             button_lgtm.setAttribute('tabindex', '1');
             button_lgtm.innerText = 'LGTM';
             button_lgtm.textContent = 'LGTM';
+            button_lgtm.id = 'lgtm-button';
             button_lgtm.onclick = function () {
                 for (var i = 0, len = document.getElementsByName('comment[body]').length; i < len; i++) {
                     document.getElementsByName('comment[body]')[i].value = "LGTM";
@@ -163,23 +180,46 @@
         // Run on page load
         update_if_necessary();
 
+        // Place a method at the end of the event queue, using n iterations
+        var queue_tail = function(meth, n) {
+            var do_queue = function() {
+                if (n--) {
+                    setTimeout(do_queue, 0);
+                } else {
+                    meth();
+                }
+            };
+
+            do_queue();
+        };
+
         // When a link is clicked, it's loaded through AJAX, so we've gotta reprocess
         jQuery.ajaxSettings.xhr = function() {
             var xhr = new XMLHttpRequest;
             xhr.addEventListener('load', function() {
                 if (this.status !== 200)
                     return;
-                if (this.response.indexOf('pjax') === -1)
+                if (this.response.indexOf('pjax') === -1 && this.responseURL.indexOf('comment') === -1)
                     return;
 
-                // Because we're the first load listener to be called, wait till processing is complete
-                setTimeout(function() {
-                    update_if_necessary();
-                }, 0);
+                // We're the first listener, so we get called first. But we need GH to build its HTML first.
+                queue_tail(update_if_necessary, 5);
             });
 
             return xhr;
         };
+
+        // When a comment is deleted, we must detect when its DOM element is removed.
+        // The HTML is removed long after the AJAX call to delete it occurs.
+        var thread = document.getElementById('discussion_bucket');
+        thread.addEventListener('DOMSubtreeModified', function(evt) {
+            // Upon deletion, the inner div.comment is removed from the wrapper
+            // Thus, when we get a subtree modified on the wrapper and it has no .comment, we're good.
+            var target = jQuery(evt.target);
+            if (target.is('.js-comment-container') && target.find('.comment').length == 0) {
+                queue_tail(update_if_necessary, 1);
+            }
+        });
     };
 
     var inject = function() {
