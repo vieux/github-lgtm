@@ -110,6 +110,11 @@
                     message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure" id="' + lgtm_msg_id + '"><span class="status-description"><span class="octicon octicon-x text-failure"></span> <span class="text-muted"><strong class="text-failure">Failed</strong> — Need at least 2 LGTM</span></span></div>');
 
                     var button = message.getElementsByClassName('merge-branch-action')[0];
+                    if (button == null) {
+                        // In pull requests where the user doesn't have perms to merge, this button won't exist.
+                        // The message is "this pull reuest can be merged by project collaborators". That's fine, just leave it.
+                        return;
+                    }
                     button.className = button.className.replace('primary', '');
 
                     message = message.getElementsByClassName('merge-branch-heading')[0];
