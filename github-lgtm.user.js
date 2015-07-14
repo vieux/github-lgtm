@@ -11,20 +11,25 @@
 
 (function () {
     var to_inject = function() {
+        String.prototype.containsAny = function() {
+            for (var i=0; i<arguments.length; i++) {
+                if (this.indexOf(arguments[i]) !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
         function highlight_comment(text, comment) {
             var content = text.textContent || text.innerText;
             try {
-                if (String(content).toLowerCase().indexOf("lgtm?") != -1 ||
-                    String(content).toLowerCase().indexOf("lgtm ?") != -1) {
+                var s = String(content).toLowerCase();
+                if (s.containsAny("lgtm?", "lgtm ?")) {
                     return 0;
-                } else if (String(content).toLowerCase().indexOf("not lgtm") != -1 ||
-                    String(content).toLowerCase().indexOf("notlgtm") != -1 ||
-                    String(content).toLowerCase().indexOf("no lgtm") != -1 ||
-                    String(content).toLowerCase().indexOf("nolgtm") != -1) {
+                } else if (s.containsAny("not lgtm", "notlgtm", "no lgtm", "nolgtm")) {
                     comment.style.backgroundColor = '#FFAAAA';
                     return -1;
-                }
-                else if (String(content).toLowerCase().indexOf("lgtm") != -1) {
+                } else if (s.containsAny("lgtm")) {
                     comment.style.backgroundColor = '#7FFF7F';
                     return 1;
                 }
