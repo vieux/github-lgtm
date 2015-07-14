@@ -156,7 +156,7 @@
                 close_button = close_button[0];
                 buttons.insertBefore(button_lgtm, close_button);
             } else {
-                buttons.appendChild(button_lgtm)
+                buttons.appendChild(button_lgtm);
             }
         }
 
@@ -181,9 +181,6 @@
                 update();
             }
         }
-
-        // Run on page load
-        update_if_necessary();
 
         // Place a method at the end of the event queue, using n iterations
         var queue_tail = function(meth, n) {
@@ -225,6 +222,9 @@
                 queue_tail(update_if_necessary, 1);
             }
         });
+
+        // Run on page load
+        update_if_necessary();
     };
 
     var inject = function() {
