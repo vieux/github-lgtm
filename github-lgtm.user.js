@@ -96,7 +96,7 @@
                 if (cpt < 2) {
                     merge.className = merge.className.replace('branch-action-state-clean', 'branch-action-state-unstable');
 
-                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="build-status-description"><span class="octicon octicon-x"></span> <strong>Failed</strong> — Need at least 2 LGTM</span></div>');
+                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-failure"><span class="status-description"><span class="octicon octicon-x text-failure"></span> <span class="text-muted"><strong class="text-failure">Failed</strong> — Need at least 2 LGTM</span></span></div>');
 
                     var button = message.getElementsByClassName('merge-branch-action')[0];
                     button.className = button.className.replace('primary', '');
@@ -111,7 +111,7 @@
                             names = ' <a class="user-mention" href="' + vote + '">@' + parts[parts.length - 1] + '</a>' + names;
                         }
                     }
-                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="build-status-description"><span class="octicon octicon-check"></span> <strong>All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</span></div>');
+                    message.insertAdjacentHTML('beforebegin', '<div class="branch-status edit-comment-hide status-success"><span class="status-description"><span class="octicon octicon-check text-success"></span> <span class="text-muted"><strong class="text-success">All is well</strong> — ' + cpt + ' LGTM <span class="divider">·</span>' + names + '</span></span></div>');
                 }
             }
         }
@@ -119,7 +119,7 @@
         function add_lgtm_button() {
             var buttons = document.getElementById('partial-new-comment-form-actions');
             button_lgtm = document.createElement('button');
-            button_lgtm.setAttribute('class', 'button primary');
+            button_lgtm.setAttribute('class', 'btn btn-primary');
             button_lgtm.setAttribute('tabindex', '1');
             button_lgtm.innerText = 'LGTM';
             button_lgtm.textContent = 'LGTM';
@@ -128,7 +128,14 @@
                     document.getElementsByName('comment[body]')[i].value = "LGTM";
                 }
             };
-            buttons.insertBefore(button_lgtm, buttons.firstChild)
+
+            var close_button = $('[name=comment_and_close]', buttons);
+            if (close_button.length > 0) {
+                close_button = close_button[0];
+                buttons.insertBefore(button_lgtm, close_button);
+            } else {
+                buttons.appendChild(button_lgtm)
+            }
         }
 
         function remove_protip() {
